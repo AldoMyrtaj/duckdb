@@ -135,7 +135,8 @@ int _kEncodingValues[] = {
   Encoding::DELTA_BINARY_PACKED,
   Encoding::DELTA_LENGTH_BYTE_ARRAY,
   Encoding::DELTA_BYTE_ARRAY,
-  Encoding::RLE_DICTIONARY
+  Encoding::RLE_DICTIONARY,
+  Encoding::BYTE_STREAM_SPLIT
 };
 const char* _kEncodingNames[] = {
   "PLAIN",
@@ -145,7 +146,8 @@ const char* _kEncodingNames[] = {
   "DELTA_BINARY_PACKED",
   "DELTA_LENGTH_BYTE_ARRAY",
   "DELTA_BYTE_ARRAY",
-  "RLE_DICTIONARY"
+  "RLE_DICTIONARY",
+  "BYTE_STREAM_SPLIT"
 };
 const std::map<int, const char*> _Encoding_VALUES_TO_NAMES(::duckdb_apache::thrift::TEnumIterator(8, _kEncodingValues, _kEncodingNames), ::duckdb_apache::thrift::TEnumIterator(-1, NULL, NULL));
 

@@ -282,6 +282,9 @@ void ColumnReader::PrepareDataPage(PageHeader &page_hdr) {
 		block->inc(block->len);
 		break;
 	}
+	case Encoding::BYTE_STREAM_SPLIT: {
+		
+	}
 		/*
 	case Encoding::DELTA_BYTE_ARRAY: {
 		dbp_decoder = make_unique<DbpDecoder>((const uint8_t *)block->ptr, block->len);

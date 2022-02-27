@@ -32,6 +32,15 @@ public:
 	}
 
 	template <class T>
+	T getValue(uint64_t index) {
+		if(index > 0) {
+			available(sizeof(T)*index);
+		}
+		T val = ptr[sizeof(T)*index];
+		return val;
+	}
+	
+	template <class T>
 	T read() {
 		T val = get<T>();
 		inc(sizeof(T));

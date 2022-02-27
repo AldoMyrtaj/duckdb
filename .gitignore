@@ -339,3 +339,7 @@ __nvm
 zig-out/*
 zig-cache/*
 *.zig
+
+#test parquet
+data/parquet-testing/testduckDB.parquet
+data/parquet-testing/testduckDBWBSS.parquet

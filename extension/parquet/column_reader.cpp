@@ -283,7 +283,9 @@ void ColumnReader::PrepareDataPage(PageHeader &page_hdr) {
 		break;
 	}
 	case Encoding::BYTE_STREAM_SPLIT: {
-		
+		bss_decoder = make_unique<BssDecoder>((const uint8_t *)block->ptr, block->len, page_rows_available);
+		block->inc(block->len);
+		break;
 	}
 		/*
 	case Encoding::DELTA_BYTE_ARRAY: {
@@ -345,7 +347,7 @@ idx_t ColumnReader::Read(uint64_t num_values, parquet_filter_t &filter, uint8_t 
 		}
 
 		D_ASSERT(block);
-		auto read_now = MinValue<idx_t>(to_read, page_rows_available);
+		auto read_now = MinValue<idx_t>(to_read, page_rows_available); // , num_values
 
 		D_ASSERT(read_now <= STANDARD_VECTOR_SIZE);
 
@@ -392,6 +394,23 @@ idx_t ColumnReader::Read(uint64_t num_values, parquet_filter_t &filter, uint8_t 
 
 			default:
 				throw std::runtime_error("DELTA_BINARY_PACKED should only be INT32 or INT64");
+			}
+			// Plain() will put NULLs in the right place
+			Plain(read_buf, define_out, read_now, filter, result_offset, result);
+		} else if (bss_decoder) {
+			auto read_buf = make_shared<ResizeableBuffer>();
+
+			switch (type.id()) {
+			case LogicalTypeId::FLOAT:
+				read_buf->resize(reader.allocator, sizeof(int32_t) * (read_now - null_count));
+				bss_decoder->GetBatch<float_t>(read_buf->ptr, read_now - null_count, result_offset);
+				break;
+			case LogicalTypeId::DOUBLE:
+				read_buf->resize(reader.allocator, sizeof(int64_t) * (read_now - null_count));
+				bss_decoder->GetBatch<double_t>(read_buf->ptr, read_now - null_count, result_offset);
+				break;
+			default:
+				throw std::runtime_error("BYTE_STREAM_SPLIT only supports FLOAT and DOUBLE");
 			}
 			// Plain() will put NULLs in the right place
 			Plain(read_buf, define_out, read_now, filter, result_offset, result);
